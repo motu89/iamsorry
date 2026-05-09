@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I'm Sorry ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Poppins:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================
+   CSS VARIABLES — Edit colors here easily
+   ======================================== */
+:root {
+  --bg:        #050505;
+  --pink:      #e8547a;
+  --rose:      #c0392b;
+  --glow:      rgba(232, 84, 122, 0.35);
+  --glow-soft: rgba(232, 84, 122, 0.12);
+  --white:     #f5eaea;
+  --muted:     rgba(245, 234, 234, 0.45);
+  --glass:     rgba(255, 255, 255, 0.03);
+  --glass-b:   rgba(255, 255, 255, 0.07);
+  --serif:     'Cormorant Garamond', Georgia, serif;
+  --script:    'Great Vibes', cursive;
+  --sans:      'Poppins', sans-serif;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--sans);
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+::selection { background: var(--pink); color: #fff; }
+
+/* ========================================
+   LOADING SCREEN
+   ======================================== */
+#loader {
+  position: fixed; inset: 0;
+  background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+
+.loader-script {
+  font-family: var(--script);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: var(--pink);
+  animation: loaderPulse 2s ease-in-out infinite;
+  text-shadow: 0 0 40px var(--glow);
+}
+
+.loader-bar-wrap {
+  width: 180px; height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-top: 32px; overflow: hidden;
+}
+.loader-bar {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--rose), var(--pink));
+  animation: loadBar 2.2s ease forwards;
+}
+
+@keyframes loadBar { to { width: 100%; } }
+@keyframes loaderPulse {
+  0%,100% { opacity: 0.6; transform: scale(0.98); }
+  50%      { opacity: 1;   transform: scale(1.02); }
+}
+
+/* ========================================
+   PARTICLE CANVAS (background rain/hearts)
+   ======================================== */
+#particleCanvas {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+}
+
+/* ========================================
+   MUSIC BUTTON
+   ======================================== */
+#musicBtn {
+  position: fixed; bottom: 28px; right: 28px;
+  z-index: 100;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(232,84,122,0.4);
+  background: rgba(10,5,5,0.7);
+  backdrop-filter: blur(12px);
+  color: var(--pink);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px var(--glow-soft);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+#musicBtn:hover {
+  box-shadow: 0 0 35px var(--glow);
+  transform: scale(1.08);
+}
+#musicBtn.playing { animation: musicPulse 2s ease-in-out infinite; }
+@keyframes musicPulse {
+  0%,100% { box-shadow: 0 0 20px var(--glow-soft); }
+  50%      { box-shadow: 0 0 40px rgba(232,84,122,0.5); }
+}
+
+/* ========================================
+   SCROLL PROGRESS BAR
+   ======================================== */
+#progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--rose), var(--pink), #ff8fab);
+  z-index: 200;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--glow);
+}
+
+/* ========================================
+   SECTION SHARED STYLES
+   ======================================== */
+section {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(60px, 10vh, 100px) clamp(20px, 6vw, 80px);
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(.16,1,.3,1),
+              transform 0.9s cubic-bezier(.16,1,.3,1);
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ========================================
+   SECTION 1 — HERO
+   ======================================== */
+#hero {
+  text-align: center;
+  gap: 0;
+  min-height: 100svh;
+}
+
+.hero-eyebrow {
+  font-family: var(--sans);
+  font-weight: 200;
+  font-size: clamp(0.65rem, 2vw, 0.8rem);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeSlideDown 1s ease 2.6s forwards;
+}
+
+.hero-line1 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.2;
+  opacity: 0;
+  animation: fadeSlideDown 1s ease 2.9s forwards;
+}
+
+.hero-line2 {
+  font-family: var(--script);
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  color: var(--pink);
+  text-shadow: 0 0 60px var(--glow), 0 0 100px var(--glow-soft);
+  line-height: 1.15;
+  margin: 12px 0 40px;
+  opacity: 0;
+  animation: fadeSlideDown 1s ease 3.2s forwards;
+}
+
+.hero-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  color: var(--muted);
+  margin-bottom: 52px;
+  opacity: 0;
+  animation: fadeSlideDown 1s ease 3.5s forwards;
+}
+
+.glow-btn {
+  display: inline-block;
+  padding: 16px 52px;
+  border: 1px solid rgba(232,84,122,0.5);
+  border-radius: 60px;
+  background: rgba(232,84,122,0.08);
+  backdrop-filter: blur(8px);
+  color: var(--pink);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  opacity: 0;
+  animation: fadeSlideDown 1s ease 3.8s forwards;
+}
+.glow-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(232,84,122,0.25), transparent 70%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.glow-btn:hover {
+  box-shadow: 0 0 40px var(--glow), 0 0 80px var(--glow-soft);
+  border-color: var(--pink);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.glow-btn:hover::before { opacity: 1; }
+
+.hero-scroll-hint {
+  position: absolute; bottom: 36px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fadeSlideDown 1s ease 4.4s forwards;
+}
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, var(--pink), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0%,100% { opacity: 0.3; transform: scaleY(0.7); }
+  50%      { opacity: 1;   transform: scaleY(1); }
+}
+.scroll-text {
+  font-size: 0.6rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   SECTION 2 — EMOTIONAL MESSAGE (typing)
+   ======================================== */
+#message {
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(232,84,122,0.05) 0%, transparent 70%);
+}
+
+.msg-label {
+  font-size: 0.65rem; letter-spacing: 0.4em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.msg-card {
+  max-width: 720px;
+  padding: clamp(36px, 6vw, 64px) clamp(28px, 6vw, 72px);
+  border: 1px solid rgba(232,84,122,0.18);
+  border-radius: 24px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 60px rgba(0,0,0,0.6), inset 0 0 40px rgba(232,84,122,0.03);
+  position: relative;
+}
+.msg-card::before {
+  content: '\201C';
+  font-family: var(--script);
+  font-size: 8rem;
+  color: var(--pink);
+  opacity: 0.12;
+  position: absolute; top: -10px; left: 20px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.typing-text {
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 2.8vw, 1.75rem);
+  font-style: italic;
+  line-height: 1.75;
+  color: var(--white);
+  min-height: 3.5em;
+}
+#cursor {
+  display: inline-block;
+  width: 2px; height: 1em;
+  background: var(--pink);
+  vertical-align: middle;
+  animation: blink 0.9s step-end infinite;
+  box-shadow: 0 0 8px var(--pink);
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.msg-author {
+  margin-top: 32px;
+  font-family: var(--script);
+  font-size: 1.6rem;
+  color: var(--pink);
+  opacity: 0.7;
+}
+
+/* ========================================
+   SECTION 3 — MEMORIES TIMELINE
+   ======================================== */
+#memories {
+  min-height: auto;
+  padding-top: clamp(80px, 12vh, 140px);
+  padding-bottom: clamp(80px, 12vh, 140px);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vh, 80px);
+}
+.section-tag {
+  font-size: 0.62rem; letter-spacing: 0.55em;
+  text-transform: uppercase; color: var(--pink);
+  margin-bottom: 16px; display: block;
+  font-weight: 600;
+  text-shadow: 0 0 18px var(--glow);
+}
+.section-title {
+  font-family: var(--script);
+  font-size: clamp(3.5rem, 9vw, 6.5rem);
+  color: #fff;
+  text-shadow:
+    0 0 30px var(--glow),
+    0 0 80px rgba(232,84,122,0.3),
+    0 2px 0 rgba(0,0,0,0.8);
+  line-height: 1;
+  font-weight: 700; /* Great Vibes bold weight */
+  letter-spacing: 0.01em;
+}
+.section-sub {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  color: rgba(245,234,234,0.7);
+  margin-top: 16px;
+  letter-spacing: 0.05em;
+}
+
+.memories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.memory-card {
+  border: 1px solid rgba(232,84,122,0.15);
+  border-radius: 20px;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(.16,1,.3,1),
+              box-shadow 0.4s ease,
+              border-color 0.4s;
+  cursor: default;
+}
+.memory-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--glow-soft);
+  border-color: rgba(232,84,122,0.4);
+}
+
+.memory-img {
+  width: 100%; aspect-ratio: 4/3;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+  position: relative; overflow: hidden;
+}
+/* Gradient placeholder backgrounds — feel free to add real images */
+.memory-card:nth-child(1) .memory-img { background: linear-gradient(135deg, #1a0810 0%, #3d0b1e 50%, #1a0810 100%); }
+.memory-card:nth-child(2) .memory-img { background: linear-gradient(135deg, #0d0d1a 0%, #1e0b3d 50%, #0d0d1a 100%); }
+.memory-card:nth-child(3) .memory-img { background: linear-gradient(135deg, #0d1a10 0%, #0b3d1e 50%, #0d1a10 100%); }
+.memory-card:nth-child(4) .memory-img { background: linear-gradient(135deg, #1a100d 0%, #3d1e0b 50%, #1a100d 100%); }
+.memory-card:nth-child(5) .memory-img { background: linear-gradient(135deg, #1a0d1a 0%, #3d0b3d 50%, #1a0d1a 100%); }
+.memory-card:nth-child(6) .memory-img { background: linear-gradient(135deg, #0d1a1a 0%, #0b3d3d 50%, #0d1a1a 100%); }
+
+.memory-emoji {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 12px rgba(255,150,150,0.4));
+  animation: floatEmoji 4s ease-in-out infinite;
+}
+.memory-card:nth-child(even) .memory-emoji { animation-delay: -2s; }
+@keyframes floatEmoji {
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+
+.memory-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(5,0,0,0.9));
+}
+
+.memory-body {
+  padding: 20px 22px 24px;
+}
+.memory-date {
+  font-size: 0.58rem; letter-spacing: 0.45em;
+  text-transform: uppercase; color: var(--pink);
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px var(--glow-soft);
+}
+.memory-caption {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(0.82rem, 1.8vw, 0.95rem);
+  line-height: 1.65;
+  color: rgba(255, 235, 235, 0.95);
+  letter-spacing: 0.01em;
+}
+.memory-tag {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.58rem; letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--pink);
+  font-weight: 700;
+  opacity: 0.85;
+  text-shadow: 0 0 8px var(--glow-soft);
+}
+
+/* ========================================
+   SECTION 4 — SORRY
+   ======================================== */
+#sorry {
+  text-align: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 60%, rgba(192,57,43,0.08) 0%, transparent 65%);
+}
+
+.sorry-bg-text {
+  position: absolute;
+  font-family: var(--script);
+  font-size: clamp(12rem, 35vw, 22rem);
+  color: rgba(232,84,122,0.03);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.02em;
+  animation: bgTextDrift 20s ease-in-out infinite alternate;
+}
+@keyframes bgTextDrift {
+  from { transform: translateX(-3%) rotate(-2deg); }
+  to   { transform: translateX(3%)  rotate(2deg); }
+}
+
+.sorry-main {
+  position: relative; z-index: 2;
+  max-width: 800px;
+}
+
+.sorry-word {
+  font-family: var(--script);
+  font-size: clamp(5rem, 16vw, 11rem);
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(232,84,122,0.9);
+  background: linear-gradient(135deg, #fff 0%, #ffb3c6 30%, #e8547a 60%, #c0392b 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradShift 5s ease infinite;
+  filter: drop-shadow(0 0 40px rgba(232,84,122,0.7)) drop-shadow(0 4px 16px rgba(0,0,0,0.9));
+  line-height: 1;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+@keyframes gradShift {
+  0%,100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.sorry-heart {
+  font-size: clamp(2rem, 5vw, 3rem);
+  animation: heartbeat 1.4s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  14%      { transform: scale(1.25); }
+  28%      { transform: scale(1); }
+  42%      { transform: scale(1.15); }
+  70%      { transform: scale(1); }
+}
+
+.sorry-lines {
+  margin-top: 48px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+.sorry-line-card {
+  padding: 24px 36px;
+  border: 1px solid rgba(232,84,122,0.22);
+  border-radius: 16px;
+  background: rgba(232,84,122,0.04);
+  backdrop-filter: blur(14px);
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(0.88rem, 2vw, 1.05rem);
+  color: rgba(255, 240, 240, 0.95);
+  line-height: 1.75;
+  text-align: left;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  letter-spacing: 0.01em;
+}
+.sorry-line-card:hover {
+  border-color: rgba(232,84,122,0.55);
+  box-shadow: 0 0 40px rgba(232,84,122,0.14), inset 0 0 20px rgba(232,84,122,0.05);
+  background: rgba(232,84,122,0.07);
+}
+.sorry-line-card span {
+  color: var(--pink);
+  font-weight: 700;
+  text-shadow: 0 0 12px var(--glow);
+}
+.line-num {
+  position: absolute; top: 14px; right: 18px;
+  font-family: var(--sans); font-size: 0.55rem;
+  letter-spacing: 0.3em; color: var(--pink); opacity: 0.65; font-weight: 700;
+}
+
+/* ========================================
+   SECTION 5 — FINAL INTERACTIVE
+   ======================================== */
+#final {
+  text-align: center;
+  min-height: 100svh;
+  background: radial-gradient(ellipse at 50% 40%, rgba(232,84,122,0.06) 0%, transparent 60%);
+  transition: background 0.8s ease;
+}
+#final.forgiven {
+  background: radial-gradient(ellipse at 50% 40%, rgba(232,84,122,0.22) 0%, rgba(100,0,30,0.1) 60%, transparent 80%) !important;
+}
+
+.final-pre {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-style: normal;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 20px;
+  text-shadow: 0 0 14px var(--glow-soft);
+}
+
+.final-title {
+  font-family: var(--script);
+  font-size: clamp(3.2rem, 9vw, 6rem);
+  color: #fff;
+  text-shadow:
+    0 0 40px rgba(255,255,255,0.15),
+    0 0 80px rgba(232,84,122,0.2),
+    0 3px 12px rgba(0,0,0,0.9);
+  margin-bottom: 56px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+.final-title em {
+  color: var(--pink);
+  font-style: normal;
+  text-shadow: 0 0 50px var(--glow), 0 0 100px rgba(232,84,122,0.3);
+}
+
+.btn-group {
+  display: flex; flex-wrap: wrap;
+  gap: 20px; justify-content: center;
+  position: relative;
+}
+
+/* Forgive button */
+#forgivBtn {
+  padding: 20px 64px;
+  border: 2px solid var(--pink);
+  border-radius: 60px;
+  background: linear-gradient(135deg, rgba(232,84,122,0.25), rgba(192,57,43,0.15));
+  color: #fff;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  box-shadow: 0 0 40px var(--glow-soft), 0 0 80px rgba(232,84,122,0.08);
+  position: relative; overflow: hidden;
+  text-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+#forgivBtn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(232,84,122,0.4), rgba(192,57,43,0.3));
+  opacity: 0; transition: opacity 0.35s;
+}
+#forgivBtn:hover {
+  box-shadow: 0 0 60px var(--glow), 0 0 100px var(--glow-soft);
+  transform: translateY(-3px) scale(1.04);
+}
+#forgivBtn:hover::after { opacity: 1; }
+#forgivBtn span { position: relative; z-index: 1; }
+
+/* Still Angry — runs away */
+#angryBtn {
+  padding: 18px 48px;
+  border: 1.5px solid rgba(255,255,255,0.22);
+  border-radius: 60px;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.65);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: absolute;
+}
+#angryBtn:hover { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.45); box-shadow: 0 0 20px rgba(255,255,255,0.05); }
+
+/* Thank you message */
+#thankYou {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: thankReveal 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+#thankYou.show { display: flex; }
+
+@keyframes thankReveal {
+  from { opacity:0; transform: scale(0.85) translateY(20px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.thank-main {
+  font-family: var(--script);
+  font-size: clamp(3.5rem, 10vw, 6.5rem);
+  color: #fff;
+  text-shadow:
+    0 0 60px var(--glow),
+    0 0 120px rgba(232,84,122,0.4),
+    0 4px 16px rgba(0,0,0,0.8);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.thank-sub {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(0.88rem, 2vw, 1.05rem);
+  color: rgba(255, 235, 235, 0.85);
+  max-width: 460px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* ========================================
+   HEART EXPLOSION CANVAS
+   ======================================== */
+#heartCanvas {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 500;
+  display: none;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 48px 24px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.footer-script {
+  font-family: var(--script);
+  font-size: 2rem;
+  color: var(--pink);
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 8px;
+}
+.footer-text {
+  font-size: 0.65rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--muted);
+  opacity: 0.4;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 600px) {
+  .sorry-line-card { padding: 18px 20px; font-size: 0.9rem; }
+  #angryBtn { position: static !important; transform: none !important; }
+  .btn-group { flex-direction: column; align-items: center; }
+  #forgivBtn { width: 100%; max-width: 280px; }
+  #angryBtn  { width: 100%; max-width: 280px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING SCREEN
+     ============================================================ -->
+<div id="loader">
+  <div class="loader-script">Still here…</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- ============================================================
+     SCROLL PROGRESS
+     ============================================================ -->
+<div id="progress"></div>
+
+<!-- ============================================================
+     BACKGROUND PARTICLES
+     ============================================================ -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ============================================================
+     MUSIC BUTTON
+     ============================================================ -->
+<button id="musicBtn" title="Toggle music">♪</button>
+<!-- Replace the src below with your own audio file URL -->
+<audio id="bgMusic" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ============================================================
+     HEART EXPLOSION CANVAS
+     ============================================================ -->
+<canvas id="heartCanvas"></canvas>
+
+<!-- ============================================================
+     SECTION 1: HERO
+     ============================================================ -->
+<section id="hero">
+  <p class="hero-eyebrow">A letter from the heart</p>
+  <h2 class="hero-line1">I know I hurt you…</h2>
+  <h1 class="hero-line2">But please<br>hear me once.</h1>
+  <p class="hero-sub">Some things are easier said with the heart than with words.</p>
+  <a class="glow-btn" href="#message">Begin ↓</a>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">scroll</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2: EMOTIONAL MESSAGE — TYPING EFFECT
+     ============================================================ -->
+<section id="message">
+  <div class="msg-label fade-up">A truth I carry</div>
+  <div class="msg-card fade-up">
+    <p class="typing-text" id="typingText"><span id="cursor"></span></p>
+    <p class="msg-author fade-up">— Always yours</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3: MEMORIES TIMELINE
+     ============================================================ -->
+<section id="memories">
+  <div class="section-header fade-up">
+    <span class="section-tag">What we had</span>
+    <h2 class="section-title">Our Moments</h2>
+    <p class="section-sub">Every frame in my mind — still vivid, still precious.</p>
+  </div>
+
+  <div class="memories-grid">
+    <!-- Memory Card 1 — Replace emoji/caption with your own -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">🌙</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Late nights</div>
+        <p class="memory-caption">"Raat ko baat karte karte neend aa jaati thi… par phone nahi rakhte the."</p>
+        <span class="memory-tag">— our thing</span>
+      </div>
+    </div>
+
+    <!-- Memory Card 2 -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">🌧️</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Rainy evenings</div>
+        <p class="memory-caption">"Baarish mein sirf tumhara khayal aata tha. Abhi bhi aata hai."</p>
+        <span class="memory-tag">— still does</span>
+      </div>
+    </div>
+
+    <!-- Memory Card 3 -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">☕</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Quiet mornings</div>
+        <p class="memory-caption">"Subah uthke pehla khayal tumhara tha. That routine I miss the most."</p>
+        <span class="memory-tag">— 6am texts</span>
+      </div>
+    </div>
+
+    <!-- Memory Card 4 -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">😂</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Random laughs</div>
+        <p class="memory-caption">"Kisi aur ke saath woh hassi nahi aati jo tumhare saath aati thi."</p>
+        <span class="memory-tag">— genuine joy</span>
+      </div>
+    </div>
+
+    <!-- Memory Card 5 -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">🌸</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Small things</div>
+        <p class="memory-caption">"Tumhara yaad karna mujhe… woh choti choti baatein jo tum yaad rakhti thi."</p>
+        <span class="memory-tag">— you noticed</span>
+      </div>
+    </div>
+
+    <!-- Memory Card 6 -->
+    <div class="memory-card fade-up">
+      <div class="memory-img">
+        <span class="memory-emoji">🌅</span>
+        <div class="memory-overlay"></div>
+      </div>
+      <div class="memory-body">
+        <div class="memory-date">Every sunset</div>
+        <p class="memory-caption">"Jab bhi raat hoti hai, ek hi cheez sochta hoon — kaash tum theek hoti."</p>
+        <span class="memory-tag">— every night</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4: SORRY
+     ============================================================ -->
+<section id="sorry">
+  <div class="sorry-bg-text" aria-hidden="true">Sorry</div>
+
+  <div class="sorry-main">
+    <div class="fade-up">
+      <div class="sorry-word">I'm Sorry</div>
+      <div class="sorry-heart">❤️</div>
+    </div>
+
+    <div class="sorry-lines">
+      <!-- Edit these Hinglish/Urdu lines as you like -->
+      <div class="sorry-line-card fade-up">
+        <span class="line-num">01</span>
+        <span>"Mujhe sirf tumse <span>baat karni thi</span>… fight jeetna nahi."</span>
+      </div>
+      <div class="sorry-line-card fade-up">
+        <span class="line-num">02</span>
+        <span>"<span>Galti meri thi</span>… par tum mere liye bohat special ho — yeh kabhi nahi badla."</span>
+      </div>
+      <div class="sorry-line-card fade-up">
+        <span class="line-num">03</span>
+        <span>"Jo hurt tum ne feel kiya, woh mujhe bhi <span>anda andar se todta hai</span>."</span>
+      </div>
+      <div class="sorry-line-card fade-up">
+        <span class="line-num">04</span>
+        <span>"Main perfect nahi hoon… lekin <span>tumhara hona chahta hoon</span> — hamesha."</span>
+      </div>
+      <div class="sorry-line-card fade-up">
+        <span class="line-num">05</span>
+        <span>"Sirf ek maafi nahi maang raha… <span>badalna chahta hoon</span> — tumhare liye, apne liye."</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5: FINAL INTERACTIVE
+     ============================================================ -->
+<section id="final">
+  <div id="finalContent">
+    <p class="final-pre fade-up">Now the question is…</p>
+    <h2 class="final-title fade-up">Will you give us<br><em>one more chance?</em></h2>
+    <div class="btn-group" id="btnGroup">
+      <button id="forgivBtn"><span>Forgive Me? ❤️</span></button>
+      <button id="angryBtn">Still Angry 😤</button>
+    </div>
+  </div>
+
+  <div id="thankYou">
+    <div class="thank-main">Thank you ❤️</div>
+    <p class="thank-sub">"Tumne maaf kiya… yeh sunke laga jaise zindagi wapas aa gayi.<br>I promise to be better — every single day."</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <span class="footer-script">Always yours</span>
+  <span class="footer-text">Made with love &amp; a broken heart</span>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ========================================
+   LOADER — hide after 2.5s
+   ======================================== */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2500);
+});
+
+/* ========================================
+   SCROLL PROGRESS BAR
+   ======================================== */
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progress');
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  el.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
+
+/* ========================================
+   INTERSECTION OBSERVER — fade-up on scroll
+   ======================================== */
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      // stagger siblings
+      const siblings = [...e.target.parentElement.querySelectorAll('.fade-up')];
+      const idx = siblings.indexOf(e.target);
+      e.target.style.transitionDelay = (idx * 0.08) + 's';
+      e.target.classList.add('visible');
+      fadeObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+
+/* ========================================
+   BACKGROUND PARTICLE SYSTEM
+   (floating hearts + soft rain particles)
+   ======================================== */
+(function initParticles() {
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles;
+
+  const HEARTS = ['❤','♡'];
+  const COLORS = ['rgba(232,84,122,', 'rgba(192,57,43,', 'rgba(255,143,171,'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    particles = [];
+    const count = Math.floor(W * H / 14000);
+    for (let i = 0; i < count; i++) {
+      const isHeart = Math.random() < 0.35;
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vy: -(0.2 + Math.random() * 0.6),
+        vx: (Math.random() - 0.5) * 0.3,
+        size: isHeart ? 8 + Math.random() * 12 : 1 + Math.random() * 2,
+        opacity: 0.05 + Math.random() * 0.25,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        isHeart,
+        symbol: HEARTS[Math.floor(Math.random() * HEARTS.length)],
+        drift: Math.random() * Math.PI * 2,
+        driftSpeed: 0.005 + Math.random() * 0.01,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.drift += p.driftSpeed;
+      p.x += p.vx + Math.sin(p.drift) * 0.3;
+      p.y += p.vy;
+      if (p.y < -20) { p.y = H + 20; p.x = Math.random() * W; }
+      if (p.x < -20) p.x = W + 20;
+      if (p.x > W + 20) p.x = -20;
+
+      ctx.globalAlpha = p.opacity;
+      if (p.isHeart) {
+        ctx.font = `${p.size}px serif`;
+        ctx.fillStyle = p.color + '0.8)';
+        ctx.fillText(p.symbol, p.x, p.y);
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + '1)';
+        ctx.fill();
+      }
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createParticles();
+  draw();
+  window.addEventListener('resize', () => { resize(); createParticles(); }, { passive: true });
+})();
+
+/* ========================================
+   TYPING TEXT EFFECT
+   ======================================== */
+(function initTyping() {
+  const lines = [
+    "Maybe I wasn't perfect…",
+    "But my feelings for you were always real.",
+    "Every laugh, every fight, every silence —",
+    "all of it was because I care,",
+    "more than I ever knew how to say."
+  ];
+
+  const el   = document.getElementById('typingText');
+  const cur  = document.getElementById('cursor');
+  let lineIdx = 0, charIdx = 0;
+  let fullText = '';
+  let started = false;
+
+  // Only start typing when the section is in view
+  const typingObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !started) {
+      started = true;
+      type();
+    }
+  }, { threshold: 0.4 });
+  typingObs.observe(document.getElementById('message'));
+
+  function type() {
+    if (lineIdx >= lines.length) return;
+
+    const line = lines[lineIdx];
+    if (charIdx < line.length) {
+      fullText += line[charIdx];
+      charIdx++;
+      el.innerHTML = fullText.replace(/\n/g, '<br>') + ' ';
+      el.appendChild(cur);
+      setTimeout(type, 38 + Math.random() * 30);
+    } else {
+      fullText += '\n';
+      lineIdx++;
+      charIdx = 0;
+      setTimeout(type, 500);
+    }
+  }
+})();
+
+/* ========================================
+   MUSIC TOGGLE
+   ======================================== */
+(function initMusic() {
+  const btn   = document.getElementById('musicBtn');
+  const audio = document.getElementById('bgMusic');
+  let playing = false;
+
+  audio.volume = 0.35;
+
+  btn.addEventListener('click', () => {
+    if (playing) {
+      audio.pause();
+      btn.textContent = '♪';
+      btn.classList.remove('playing');
+    } else {
+      audio.play().catch(() => {});
+      btn.textContent = '■';
+      btn.classList.add('playing');
+    }
+    playing = !playing;
+  });
+})();
+
+/* ========================================
+   "STILL ANGRY" BUTTON — runs away
+   ======================================== */
+(function initAngryBtn() {
+  const btn      = document.getElementById('angryBtn');
+  const group    = document.getElementById('btnGroup');
+  let escapeCount = 0;
+
+  function getRandomPos() {
+    const gr = group.getBoundingClientRect();
+    const bw = btn.offsetWidth;
+    const bh = btn.offsetHeight;
+    const maxX = Math.min(window.innerWidth  - bw, gr.width  + 40);
+    const maxY = Math.min(window.innerHeight - bh, gr.height + 40);
+    return {
+      x: (Math.random() - 0.5) * maxX * 0.9,
+      y: (Math.random() - 0.5) * maxY * 0.6
+    };
+  }
+
+  btn.addEventListener('mouseenter', () => {
+    if (escapeCount > 5) { btn.title = 'I give up! 🥺'; return; }
+    escapeCount++;
+    const pos = getRandomPos();
+    btn.style.position = 'absolute';
+    btn.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    btn.style.transition = 'transform 0.25s cubic-bezier(.16,1,.3,1)';
+  });
+
+  btn.addEventListener('click', () => {
+    btn.textContent = 'Fine... I still am. 🥺';
+    setTimeout(() => { btn.textContent = 'Still Angry 😤'; }, 2000);
+  });
+})();
+
+/* ========================================
+   HEART EXPLOSION + FORGIVEN STATE
+   ======================================== */
+(function initForgiven() {
+  const btn      = document.getElementById('forgivBtn');
+  const final    = document.getElementById('final');
+  const content  = document.getElementById('finalContent');
+  const thanks   = document.getElementById('thankYou');
+  const canvas   = document.getElementById('heartCanvas');
+  const ctx      = canvas.getContext('2d');
+
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  btn.addEventListener('click', () => {
+    // Swap content
+    content.style.opacity = '0';
+    content.style.transform = 'scale(0.95)';
+    content.style.transition = 'all 0.5s ease';
+    setTimeout(() => {
+      content.style.display = 'none';
+      thanks.classList.add('show');
+    }, 500);
+
+    // Glow background
+    final.classList.add('forgiven');
+
+    // Heart explosion
+    canvas.style.display = 'block';
+    explode(window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  function explode(cx, cy) {
+    const hearts = [];
+    const symbols = ['❤','♡','💕','💖','💗'];
+    for (let i = 0; i < 80; i++) {
+      const angle  = (Math.random() * Math.PI * 2);
+      const speed  = 3 + Math.random() * 10;
+      hearts.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 4,
+        size: 14 + Math.random() * 22,
+        alpha: 1,
+        symbol: symbols[Math.floor(Math.random() * symbols.length)],
+        rot: Math.random() * 0.4 - 0.2,
+        gravity: 0.18 + Math.random() * 0.15
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      hearts.forEach(h => {
+        if (h.alpha <= 0) return;
+        alive = true;
+        h.x  += h.vx;
+        h.y  += h.vy;
+        h.vy += h.gravity;
+        h.alpha -= 0.012;
+        ctx.globalAlpha = Math.max(h.alpha, 0);
+        ctx.font = `${h.size}px serif`;
+        ctx.fillText(h.symbol, h.x, h.y);
+      });
+      ctx.globalAlpha = 1;
+      if (alive) requestAnimationFrame(animate);
+      else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = 'none';
+      }
+    }
+    animate();
+  }
+})();
+</script>
+</body>
+</html>
